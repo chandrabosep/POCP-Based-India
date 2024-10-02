@@ -63,30 +63,39 @@ export default function Page() {
 
 	return (
 		<div className="w-full h-full flex flex-col gap-y-6">
-			<div className="w-full flex flex-col justify-center gap-y-6 h-fit py-6">
-				<h3 className="text-xl font-bold">Create Event</h3>
-
-				<div>
+			<div className="w-full flex flex-col justify-center gap-y-4 h-fit py-6">
+				<h3 className="text-xl underline underline-offset-4 decoration-wavy">
+					Create Event
+				</h3>
+				<div className="space-y-2">
 					<Label>Name</Label>
 					<Input
 						placeholder="Give a name..."
 						value={eventName}
 						onChange={(e) => setEventName(e.target.value)}
+						className="border-foreground/50"
 					/>
 				</div>
 
-				<div>
+				<div className="space-y-2">
 					<Label>Upload Luma event attendee file</Label>
 					<FileUploadDropzone onFileUpload={handleFileUpload} />
 				</div>
 
-				<Button onClick={handleCreateEvent}>Create Event</Button>
+				<Button
+					onClick={handleCreateEvent}
+					className="bg-foreground text-background hover:bg-accent hover:text-accent-foreground"
+				>
+					Create Event
+				</Button>
 			</div>
-			<div className="flex flex-col gap-y-4">
-				<h3 className="text-xl font-bold">Participants</h3>
+			<div className="flex flex-col gap-y-6">
+				<h3 className="text-xl underline underline-offset-4 decoration-wavy">
+					Participants
+				</h3>
 				<Table className="min-w-full table-auto">
 					<thead>
-						<tr className="bg-gray-200 ">
+						<tr className="bg-accent text-background">
 							{["Name", "Email", "ETH Address"].map(
 								(header, index) => (
 									<th
@@ -104,7 +113,7 @@ export default function Page() {
 							users.map((user, index) => (
 								<tr
 									key={index}
-									className="border-b text-gray-500"
+									className="border-b text-accent/70"
 								>
 									<td className="px-4 py-4">{user.name}</td>
 									<td className="px-4 py-4">{user.email}</td>
