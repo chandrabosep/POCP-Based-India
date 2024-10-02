@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            Int         @id @default(autoincrement())
+  name          String
+  email         String      @unique
+  walletAddress String?      @unique
+  requests      Request[] 
+  EventUsers    EventUser[] 
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Request {
+  id        Int           @id @default(autoincrement())
+  user      User          @relation(fields: [userId], references: [id])
+  userId    Int
+  status    RequestStatus @default(PENDING) // Status of the request (accepted or pending)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Event {
+  id        Int         @id @default(autoincrement())
+  name      String
+  users     EventUser[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model EventUser {
+  userId  Int
+  eventId Int
+  User    User  @relation(fields: [userId], references: [id])
+  Event   Event @relation(fields: [eventId], references: [id])
+
+  // Composite primary key to ensure uniqueness of the user-event combination
+  @@id([userId, eventId])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
