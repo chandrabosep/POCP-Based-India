@@ -66,11 +66,103 @@ export const isUserInEvent = async (
 				userId: true,
 			},
 		});
-		console.log("userInEvent **************************", userInEvent, eventSlug, walletAddress);
-
 		return !!userInEvent;
 	} catch (error) {
 		console.error("Error checking if user is in the event:", error);
 		throw error;
+	}
+};
+
+export const sendRequest = async (
+	senderWallet: string,
+	targetWallet: string
+) => {
+	try {
+		// Find sender and target users by wallet addresses
+		const sender = await prisma.user.findUnique({
+			where: { walletAddress: senderWallet },
+		});
+		const target = await prisma.user.findUnique({
+			where: { walletAddress: targetWallet },
+		});
+
+		if (!sender || !target)
+			throw new Error("Sender or target user not found");
+
+		// Create the request
+		const request = await prisma.request.create({
+			data: {
+				userId: sender.id,
+				targetUserId: target.id, // Assuming you'll add targetUserId field in Request model
+				status: "PENDING",
+			},
+		});
+		return request;
+	} catch (error) {
+		console.error("Error sending request:", error);
+		throw error;
+	}
+};
+
+export const acceptRequest = async (requestId: number) => {
+	try {
+		// Update request status to 'ACCEPTED'
+		const acceptedRequest = await prisma.request.update({
+			where: { id: requestId },
+			data: { status: "ACCEPTED" },
+		});
+		return acceptedRequest;
+	} catch (error) {
+		console.error("Error accepting request:", error);
+		throw error;
+	}
+};
+
+export const rejectRequest = async (requestId: number) => {
+	try {
+		// Update request status to 'REJECTED'
+		const rejectedRequest = await prisma.request.update({
+			where: { id: requestId },
+			data: { status: "REJECTED" },
+		});
+		return rejectedRequest;
+	} catch (error) {
+		console.error("Error rejecting request:", error);
+		throw error;
+	}
+};
+
+export const getAllRequestsForUser = async (walletAddress: string) => {
+	try {
+		const user = await prisma.user.findUnique({
+			where: { walletAddress: walletAddress }, // Ensure it's case-insensitive
+			select: { id: true },
+		});
+
+		console.log("User found:", user);
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const requests = await prisma.request.findMany({
+			where: {
+				OR: [{ userId: user.id }, { targetUserId: user.id }],
+			},
+			include: {
+				user: {
+					select: { walletAddress: true, name: true },
+				},
+				targetUser: {
+					select: { walletAddress: true, name: true },
+				},
+			},
+		});
+
+		console.log("Requests found:", requests);
+
+		return requests;
+	} catch (error: any) {
+		console.error("**************Error fetching requests:", error.message);
 	}
 };
