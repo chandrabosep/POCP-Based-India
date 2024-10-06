@@ -23,7 +23,7 @@ export default function RootLayout({
 				<QueryProviderWrapper>
 					<Web3Providers>
 						<Navbar />
-						<div className="w-11/12 h-full mx-auto max-w-screen-2xl">
+						<div className="w-11/12 h-full mx-auto max-w-screen-xl">
 							{children}
 						</div>
 						<Toaster />

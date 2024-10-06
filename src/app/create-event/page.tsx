@@ -16,11 +16,14 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function Page() {
 	const [eventName, setEventName] = useState("");
 	const [csvFile, setCsvFile] = useState<File | null>(null);
 	const [users, setUsers] = useState<any[]>([]);
+	const [created, setCreated] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
 
 	const handleFileUpload = (file: File) => {
@@ -42,7 +45,14 @@ export default function Page() {
 			Papa.parse(csvFile, {
 				header: true,
 				complete: function (results) {
-					createEvent({ users: results.data, eventName }).then(() => {
+					setLoading(true);
+					createEvent({
+						users: results.data,
+						eventName,
+						slug: eventName.split(" ").join("-"),
+					}).then(() => {
+						setCreated(true);
+						setLoading(false);
 						toast({
 							title: "Event created successfully",
 							description:
@@ -82,12 +92,23 @@ export default function Page() {
 					<FileUploadDropzone onFileUpload={handleFileUpload} />
 				</div>
 
-				<Button
-					onClick={handleCreateEvent}
-					className="bg-foreground text-background hover:bg-accent hover:text-accent-foreground"
-				>
-					Create Event
-				</Button>
+				{created ? (
+					<Link
+						href={`/events/${eventName.split(" ").join("-")}`}
+						className="w-full"
+					>
+						<Button className="w-full bg-foreground text-background ">
+							Go to your event
+						</Button>
+					</Link>
+				) : (
+					<Button
+						onClick={handleCreateEvent}
+						className="bg-foreground text-background"
+					>
+						{loading ? "Loading..." : "Create Event"}
+					</Button>
+				)}
 			</div>
 			<div className="flex flex-col gap-y-6">
 				<h3 className="text-xl underline underline-offset-4 decoration-wavy">
@@ -111,10 +132,7 @@ export default function Page() {
 					<tbody>
 						{users.length > 0 &&
 							users.map((user, index) => (
-								<tr
-									key={index}
-									className="border-b text-accent/70"
-								>
+								<tr key={index} className="border-b">
 									<td className="px-4 py-4">{user.name}</td>
 									<td className="px-4 py-4">{user.email}</td>
 									<td className="px-4 py-4">
