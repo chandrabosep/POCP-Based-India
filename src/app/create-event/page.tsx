@@ -95,7 +95,7 @@ export default function Page() {
 				</h3>
 				<Table className="min-w-full table-auto">
 					<thead>
-						<tr className="bg-accent text-background">
+						<tr className="bg-accent">
 							{["Name", "Email", "ETH Address"].map(
 								(header, index) => (
 									<th
