@@ -36,7 +36,7 @@ const FileUploadDropzone = ({
             </p>
           ) : (
             <p className="mb-1 text-sm text-gray-500 dark:text-gray-400 text-center">
-              <span className="font-semibold">{file[0]?.name}</span> uploaded
+              <span className="font-semibold">{ file && file[0]?.name}</span> uploaded
             </p>
           )}
         </div>

@@ -107,7 +107,6 @@ export default function Profile() {
 								}
 							}}
 							constraints={{ facingMode: "environment" }}
-							style={{ width: "300px" }}
 						/>
 					)}
 				</>
