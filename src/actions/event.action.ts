@@ -73,10 +73,13 @@ export const isUserInEvent = async (
 	}
 };
 
-export const sendRequest = async (
-	senderWallet: string,
-	targetWallet: string
-) => {
+export const sendRequest = async ({
+	senderWallet,
+	targetWallet,
+}: {
+	senderWallet: string;
+	targetWallet: string;
+}) => {
 	try {
 		// Find sender and target users by wallet addresses
 		const sender = await prisma.user.findUnique({
