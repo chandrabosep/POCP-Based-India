@@ -1,5 +1,10 @@
+import Leaderboard from "@/components/LeaderBoard";
 import React from "react";
 
 export default function page() {
-	return <div>page</div>;
+	return (
+		<>
+			<Leaderboard />
+		</>
+	);
 }

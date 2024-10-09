@@ -14,25 +14,18 @@ import { useAccount } from "wagmi";
 import { QRCodeSVG } from "qrcode.react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
 	const { address } = useAccount();
 	const pathname = usePathname();
-
+	const { toast } = useToast();
 	const pathSegments = pathname.split("/");
 	const eventSlug = pathSegments[2];
 	const [scannedData, setScannedData] = useState(null);
-	const [isScanning, setIsScanning] = useState(false);
 	const queryClient = useQueryClient();
 
 	const { data, isLoading } = useQuery({
@@ -49,34 +42,44 @@ export default function Profile() {
 		queryKey: ["requests", address],
 		queryFn: async () => {
 			if (!address) return [];
-			return await getAllRequestsForUser(address);
+			return await getAllRequestsForUser(address, eventSlug);
 		},
 		enabled: !!address,
 	});
-	console.log(requests);
 
-	const sendRequestMutation = useMutation({
+	const { mutate: sendRequestMutation, isPending } = useMutation({
 		mutationFn: (targetAddress: string) => {
 			return sendRequest({
 				senderWallet: address || "",
 				targetWallet: targetAddress,
+				eventSlug: eventSlug,
 			});
 		},
+		onError: (error) => {
+			toast({
+				title: "Error sending request",
+				description: error.message,
+				variant: "destructive",
+			});
+			setScannedData(null);
+		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["requests", address] });
+			queryClient.invalidateQueries({
+				queryKey: ["requests", address],
+			});
 			scannedData && setScannedData(null);
 		},
 	});
 
 	const acceptRequestMutation = useMutation({
-		mutationFn: (requestId: number) => acceptRequest(requestId),
+		mutationFn: (requestId: number) => acceptRequest(requestId, eventSlug),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["requests", address] });
 		},
 	});
 
 	const rejectRequestMutation = useMutation({
-		mutationFn: (requestId: number) => rejectRequest(requestId),
+		mutationFn: (requestId: number) => rejectRequest(requestId, eventSlug),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["requests", address] });
 		},
@@ -85,14 +88,12 @@ export default function Profile() {
 	const handleScan = (detectedCodes: any) => {
 		if (detectedCodes && detectedCodes.length > 0) {
 			setScannedData(detectedCodes[0].rawValue || detectedCodes[0].text);
-			setIsScanning(false);
 		}
 	};
 
 	const handleError = (error: any) => {
 		if (error) {
 			console.error(error);
-			setIsScanning(false);
 		}
 	};
 
@@ -104,7 +105,7 @@ export default function Profile() {
 		);
 	}
 
-	if (!data) {
+	if (!data || !data?.isUserInEvent) {
 		return (
 			<div className="text-center w-full py-20">
 				Kindly connect the wallet you used to register for the event.
@@ -136,26 +137,28 @@ export default function Profile() {
 					<Card>
 						<CardHeader>
 							<CardTitle>
-								{scannedData
+								{scannedData && scannedData != address
 									? "Scanned Address"
 									: "Scan QR Code"}
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="flex flex-col items-center justify-center mb-2">
-							{scannedData ? (
+							{scannedData && scannedData != address ? (
 								<div className="text-center">
 									<p className="mb-4 break-all bg-muted p-2 rounded">
 										{scannedData}
 									</p>
 									<Button
 										onClick={() => {
-											sendRequestMutation.mutate(
-												scannedData
-											);
+											sendRequestMutation(scannedData);
 										}}
 										className="w-full"
 									>
-										Send Request
+										{!isPending ? (
+											"Send Request"
+										) : (
+											<Loader2 className="mr-1 h-3 w-3 animate-spin" />
+										)}
 									</Button>
 								</div>
 							) : (
@@ -204,10 +207,8 @@ export default function Profile() {
 												? "default"
 												: "destructive"
 										}
+										className="h-8"
 									>
-										{request.status === "PENDING" && (
-											<Loader2 className="mr-1 h-3 w-3 animate-spin" />
-										)}
 										{request.status === "ACCEPTED" && (
 											<CheckCircle className="mr-1 h-3 w-3" />
 										)}
