@@ -2,7 +2,13 @@
 
 import prisma from "@/lib/db";
 
-export const createEvent = async ({ users, eventName, slug, creator }: any) => {
+export const createEvent = async ({
+	users,
+	eventName,
+	slug,
+	creator,
+	date,
+}: any) => {
 	try {
 		// Step 1: Create the event
 		console.log(
@@ -13,6 +19,7 @@ export const createEvent = async ({ users, eventName, slug, creator }: any) => {
 				name: eventName,
 				slug,
 				creator,
+				date,
 			},
 		});
 		for (const userData of users) {

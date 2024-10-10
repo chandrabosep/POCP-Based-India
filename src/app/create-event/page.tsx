@@ -18,6 +18,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Page() {
 	const [eventName, setEventName] = useState("");
@@ -27,6 +35,7 @@ export default function Page() {
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
 	const { address } = useAccount();
+	const [date, setDate] = useState<Date>();
 
 	const handleFileUpload = (file: File) => {
 		setCsvFile(file);
@@ -85,6 +94,7 @@ export default function Page() {
 						eventName,
 						slug: eventName.split(" ").join("-"),
 						creator: address || "",
+						date,
 					}).then(() => {
 						setCreated(true);
 						setLoading(false);
@@ -109,20 +119,56 @@ export default function Page() {
 	return (
 		<div className="w-full h-full flex flex-col gap-y-6">
 			<div className="w-full flex flex-col justify-center gap-y-4 h-fit py-6">
-				<h3 className="text-xl underline underline-offset-4 decoration-wavy">
-					Create Event
-				</h3>
-				<div className="space-y-2">
-					<Label>Name</Label>
-					<Input
-						placeholder="Give a name..."
-						value={eventName}
-						onChange={(e) => setEventName(e.target.value)}
-						className="border-foreground/50"
-					/>
+				<h3 className="text-xl font-medium">Add Event</h3>
+				<div className="flex flex-col md:flex-row gap-4">
+					<div className="w-full flex flex-col gap-2">
+						<Label>Name</Label>
+						<Input
+							placeholder="Give a name..."
+							value={eventName}
+							onChange={(e) => setEventName(e.target.value)}
+							className="text-white placeholder:text-white"
+						/>
+					</div>
+					<div className="flex flex-col gap-2">
+						<Label>Date</Label>
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button
+									variant={"outline"}
+									className={cn(
+										"w-[280px] justify-start text-left font-normal bg-transparent hover:bg-transparent text-white hover:text-white",
+										!date && "text-muted-foreground"
+									)}
+								>
+									<CalendarIcon className="mr-2 h-4 w-4" />
+									{date ? (
+										new Date(date).toLocaleDateString(
+											"en-GB",
+											{
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+											}
+										)
+									) : (
+										<span>Pick a date</span>
+									)}
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className="w-auto p-0">
+								<Calendar
+									mode="single"
+									selected={date}
+									onSelect={setDate}
+									initialFocus
+								/>
+							</PopoverContent>
+						</Popover>
+					</div>
 				</div>
 
-				<div className="space-y-2">
+				<div className="space-y-2 pt-4">
 					<Label>Upload Luma event attendee file</Label>
 					<FileUploadDropzone onFileUpload={handleFileUpload} />
 				</div>
@@ -132,26 +178,24 @@ export default function Page() {
 						href={`/events/${eventName.split(" ").join("-")}`}
 						className="w-full"
 					>
-						<Button className="w-full bg-foreground text-background ">
+						<Button className="w-full bg-[#0152FF] hover:bg-[#0152FF] text-white">
 							Go to your event
 						</Button>
 					</Link>
 				) : (
 					<Button
 						onClick={handleCreateEvent}
-						className="bg-foreground text-background"
+						className="bg-[#0152FF] hover:bg-[#0152FF] text-white"
 					>
-						{loading ? "Loading..." : "Create Event"}
+						{loading ? "Loading..." : "Add Attendees"}
 					</Button>
 				)}
 			</div>
 			<div className="flex flex-col gap-y-6">
-				<h3 className="text-xl underline underline-offset-4 decoration-wavy">
-					Participants
-				</h3>
+				<h3 className="text-xl font-medium">Participants</h3>
 				<Table className="min-w-full table-auto">
 					<thead>
-						<tr className="bg-accent">
+						<tr className="bg-gray-600 bg-opacity-50">
 							{["Name", "Email", "ETH Address"].map(
 								(header, index) => (
 									<th
