@@ -8,7 +8,7 @@ body {
 
 :root,
 body {
-	@apply min-h-screen w-full bg-gradient-to-b from-blue-800 to-black;
+	@apply min-h-screen w-full bg-gradient-to-b from-blue-800 to-black text-foreground;
 }
 
 @layer utilities {

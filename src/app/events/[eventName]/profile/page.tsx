@@ -7,7 +7,14 @@ import {
 	sendRequest,
 } from "@/actions/event.action";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, Loader2, Loader2Icon, XCircle } from "lucide-react";
+import {
+	CheckCircle,
+	Instagram,
+	Loader2,
+	Loader2Icon,
+	Twitter,
+	XCircle,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
@@ -18,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { DiscordLogoIcon } from "@radix-ui/react-icons";
 
 export default function Profile() {
 	const { address } = useAccount();
@@ -70,6 +78,7 @@ export default function Profile() {
 			scannedData && setScannedData(null);
 		},
 	});
+	console.log(requests);
 
 	const acceptRequestMutation = useMutation({
 		mutationFn: (requestId: number) => acceptRequest(requestId, eventSlug),
@@ -179,76 +188,106 @@ export default function Profile() {
 					</Card>
 				</TabsContent>
 			</Tabs>
+			<div className="flex flex-col gap-y-6 py-6 w-1/2">
+				<h2 className="text-2xl font-semibold text-white">
+					Interactions
+				</h2>
+				<div className="space-y-4 w-full ">
+					{isLoadingRequests ? (
+						<Loader2Icon className="w-8 h-8 animate-spin mx-auto" />
+					) : (
+						requests &&
+						// @ts-ignore
+						requests?.requests?.map((request) => (
+							<div
+								key={request.id}
+								className="overflow-hidden w-full"
+							>
+								<div className="w-full max-w-6xl">
+									<div className="flex justify-between items-start">
+										<div className="flex gap-x-4">
+											<p className="text-xl">🤝</p>
+											<div className="flex flex-col gap-y-1">
+												<h3 className="text-2xl font-medium text-white max-w-xs">
+													You met with{" "}
+													{request.targetUser.name}
+												</h3>
+												<p className="text-white/40">
+													{new Date(
+														request.targetUser.createdAt
+													).toLocaleString("en-US", {
+														weekday: "long",
+														year: "numeric",
+														month: "long",
+														day: "numeric",
+														hour: "2-digit",
+														minute: "2-digit",
+													})}
+												</p>
+												<div className="flex space-x-5 pt-3">
+													<Twitter className="size-5" />
 
-			<h2 className="text-2xl font-bold mb-4 text-primary">Requests</h2>
-			<div className="space-y-4">
-				{requests &&
-					requests.map((request) => (
-						<Card key={request.id} className="overflow-hidden">
-							<CardContent className="p-4 flex justify-between items-center gap-x-8">
-								<div className="overflow-hidden">
-									<p
-										className="font-semibold truncate"
-										title={
-											request.targetUser.walletAddress ||
-											""
-										}
-									>
-										Address:{" "}
-										{request.targetUser.walletAddress}
-									</p>
-								</div>
-								<div className="flex items-center space-x-2">
-									<Badge
-										variant={
-											request.status === "PENDING"
-												? "secondary"
-												: request.status === "ACCEPTED"
-												? "default"
-												: "destructive"
-										}
-										className="h-8"
-									>
-										{request.status === "ACCEPTED" && (
-											<CheckCircle className="mr-1 h-3 w-3" />
-										)}
-										{request.status === "REJECTED" && (
-											<XCircle className="mr-1 h-3 w-3" />
-										)}
-										{request.status}
-									</Badge>
-									{request.status === "PENDING" && (
-										<div className="flex space-x-2">
-											<Button
-												onClick={() =>
-													acceptRequestMutation.mutate(
-														request?.id
-													)
-												}
-												variant="outline"
-												size="sm"
-												className="text-green-600 hover:text-green-700 hover:bg-green-50"
-											>
-												Accept
-											</Button>
-											<Button
-												onClick={() =>
-													rejectRequestMutation.mutate(
-														request?.id
-													)
-												}
-												variant="outline"
-												size="sm"
-												className="text-red-600 hover:text-red-700 hover:bg-red-50"
-											>
-												Reject
-											</Button>
+													<Instagram className="size-5" />
+
+													<DiscordLogoIcon className="size-5" />
+												</div>
+											</div>
 										</div>
-									)}
+
+										<div className="flex gap-x-4 items-center justify-center pt-2">
+											<div
+												className={`p-1 px-5 rounded-full border capitalize flex items-center font-semibold ${
+													request.status === "PENDING"
+														? "bg-yellow-100 text-yellow-800 border-yellow-500"
+														: request.status ===
+														  "ACCEPTED"
+														? "bg-green-100 text-green-800 border-green-500"
+														: request.status ===
+														  "REJECTED"
+														? "bg-red-100 text-red-800 border-red-500"
+														: "bg-gray-100 text-gray-800 border-gray-500"
+												}`}
+											>
+												{request.status}
+											</div>
+
+											{request.status === "PENDING" &&
+												request.targetUserId ===
+													request.userId && (
+													<div className="flex space-x-2">
+														<Button
+															onClick={() =>
+																acceptRequestMutation.mutate(
+																	request?.id
+																)
+															}
+															variant="outline"
+															size="sm"
+															className="text-green-600 hover:text-green-700 bg-green-100 hover:bg-green-100"
+														>
+															Accept
+														</Button>
+														<Button
+															onClick={() =>
+																rejectRequestMutation.mutate(
+																	request?.id
+																)
+															}
+															variant="outline"
+															size="sm"
+															className="text-red-600 hover:text-red-700 bg-red-100 hover:bg-red-100"
+														>
+															Reject
+														</Button>
+													</div>
+												)}
+										</div>
+									</div>
 								</div>
-							</CardContent>
-						</Card>
-					))}
+							</div>
+						))
+					)}
+				</div>
 			</div>
 		</div>
 	);
