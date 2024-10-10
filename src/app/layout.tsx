@@ -21,9 +21,11 @@ export default function RootLayout({
 			<body className={`w-full h-full`}>
 				<QueryProviderWrapper>
 					<Web3Providers>
-						<Navbar />
-						<div className="w-11/12 h-full mx-auto max-w-screen-xl">
-							{children}
+						<div className="h-full text-white">
+							<Navbar />
+							<div className="w-11/12 h-full mx-auto max-w-screen-xl ">
+								{children}
+							</div>
 						</div>
 						<Toaster />
 					</Web3Providers>

@@ -20,23 +20,23 @@ export default function Navbar() {
 	const { address } = useAccount();
 	console.log(address);
 	return (
-		<div className="w-full py-4 border-b border-t-slate-100 bg-[#F9FAFB]">
-			<div className="w-11/12 mx-auto max-w-screen-xl flex items-center justify-between">
-				<h5 className="text-lg tracking-wider">POCP</h5>
+		<div className="w-full">
+			<div className="w-11/12 mx-auto max-w-screen-xl flex items-center justify-between py-4 border-b">
+				<div className="text-2xl font-bold">POCP</div>
 				<div className="flex justify-end">
 					<Wallet>
-						<ConnectWallet>
-							<Address className={``} />
+						<ConnectWallet  className="bg-[#0152FF] hover:bg-[#0152FF] text-white">
+							<Address className={`text-white`} />
 						</ConnectWallet>
-						<WalletDropdown>
+						<WalletDropdown >
 							<Identity
-								className="px-4 pt-3 pb-2"
+								className="px-4 pt-3 pb-2 bg-[#0152FF] hover:bg-[#0152FF] text-white"
 								hasCopyAddressOnClick
 							>
-								<Address className={``} />
+								<Address className={`text-white`} />
 								<EthBalance />
 							</Identity>
-							<WalletDropdownDisconnect text="Log out" />
+							<WalletDropdownDisconnect text="Log out" className="bg-[#0152FF] hover:bg-[#0152FF] text-white" />
 						</WalletDropdown>
 					</Wallet>
 				</div>
