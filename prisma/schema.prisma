@@ -13,6 +13,8 @@ model User {
   name             String
   email            String      @unique
   walletAddress    String?     @unique
+  x                String?
+  instagram        String?
   requestsSent     Request[]   @relation("UserSentRequests")
   requestsReceived Request[]   @relation("UserReceivedRequests")
   EventUsers       EventUser[]
@@ -36,6 +38,7 @@ model Request {
 model Event {
   id        Int         @id @default(autoincrement())
   name      String      @unique
+  creator   String
   users     EventUser[]
   requests  Request[]
   slug      String      @unique

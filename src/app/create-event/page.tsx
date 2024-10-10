@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 
 export default function Page() {
 	const [eventName, setEventName] = useState("");
@@ -25,6 +26,7 @@ export default function Page() {
 	const [created, setCreated] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
+	const { address } = useAccount();
 
 	const handleFileUpload = (file: File) => {
 		setCsvFile(file);
@@ -45,11 +47,44 @@ export default function Page() {
 			Papa.parse(csvFile, {
 				header: true,
 				complete: function (results) {
+					const users = results.data;
+
+					const findInstagramKey = (user: any) =>
+						Object.keys(user).find((key) =>
+							key.toLowerCase().includes("instagram")
+						);
+					const findXKey = (user: any) =>
+						Object.keys(user).find(
+							(key) =>
+								key.toLowerCase().includes("twitter") ||
+								key.toLowerCase().includes("x")
+						);
+
 					setLoading(true);
+
+					const updatedUsers = users.map((user) => {
+						if (typeof user === "object" && user !== null) {
+							const instagramKey = findInstagramKey(user);
+							const xKey = findXKey(user);
+							return {
+								...user,
+								instagram: instagramKey
+									? // @ts-ignore
+									  user[instagramKey]
+									: null,
+								// @ts-ignore
+								x: xKey ? user[xKey] : null,
+							};
+						} else {
+							return {};
+						}
+					});
+
 					createEvent({
-						users: results.data,
+						users: updatedUsers,
 						eventName,
 						slug: eventName.split(" ").join("-"),
+						creator: address || "",
 					}).then(() => {
 						setCreated(true);
 						setLoading(false);

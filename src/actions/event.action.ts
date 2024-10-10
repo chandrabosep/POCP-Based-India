@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/db";
 
-export const createEvent = async ({ users, eventName, slug }: any) => {
+export const createEvent = async ({ users, eventName, slug, creator }: any) => {
 	try {
 		// Step 1: Create the event
 		console.log(
@@ -12,6 +12,7 @@ export const createEvent = async ({ users, eventName, slug }: any) => {
 			data: {
 				name: eventName,
 				slug,
+				creator,
 			},
 		});
 		for (const userData of users) {
@@ -241,7 +242,7 @@ export const getAllRequestsForUser = async (
 		});
 
 		if (!user) {
-			throw new Error("User not found");
+			throw Error("User not found");
 		}
 
 		// Retrieve all requests related to the user in this event by eventSlug
@@ -253,17 +254,31 @@ export const getAllRequestsForUser = async (
 					},
 					{
 						event: {
-							slug: eventSlug, // Ensure the event matches the slug
+							slug: eventSlug,
 						},
 					},
 				],
 			},
 			include: {
 				user: {
-					select: { walletAddress: true, name: true },
+					select: {
+						walletAddress: true,
+						name: true,
+						email: true,
+						x: true,
+						instagram: true,
+						createdAt: true,
+					},
 				},
 				targetUser: {
-					select: { walletAddress: true, name: true },
+					select: {
+						walletAddress: true,
+						name: true,
+						email: true,
+						x: true,
+						instagram: true,
+						createdAt: true,
+					},
 				},
 				event: {
 					select: { name: true, slug: true },
@@ -271,8 +286,7 @@ export const getAllRequestsForUser = async (
 			},
 		});
 
-		console.log("Requests found:", requests);
-		return requests;
+		return { requests, userId: user.id };
 	} catch (error: any) {
 		console.error("Error fetching requests:", error.message);
 		throw error;
