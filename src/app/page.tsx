@@ -1,18 +1,9 @@
-import { Button } from "@/components/ui/button";
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-	Sparkles,
-	Zap,
-	Shield,
-	Globe,
-	ChevronRight,
-	LinkIcon,
-	LucideDiamond,
-	ToyBrick,
-} from "lucide-react";
+import { Sparkles, Zap, Shield, Globe, LinkIcon, ToyBrick } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 
 export default function HomePage() {
 	return (
