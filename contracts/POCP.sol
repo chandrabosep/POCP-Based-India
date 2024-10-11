@@ -3,7 +3,6 @@ pragma solidity ^0.8.20;
 
 import {IEAS, Attestation} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import {SchemaResolver} from "@ethereum-attestation-service/eas-contracts/contracts/resolver/SchemaResolver.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// Custom Errors for better gas efficiency and clarity
 error POCP__InvalidEventId();
@@ -16,13 +15,10 @@ error POCP__InvalidAttestation();
 
 /**
  * @title POCP - Proof of Connection Protocol
- * @dev This contract facilitates the registration of events and allows users to make attestations
- * of their participation or connections within an event. It also tracks reputation scores for users
- * based on their participation.
  * @author mujahid002
  * @custom:security-contact mujahidshaik2002@gmail.com
  */
-contract POCP is SchemaResolver, Ownable {
+contract POCP is SchemaResolver {
     /// @notice Maps an event's unique identifier to its expiration timestamp
     mapping(string => uint64) private s_eventExpirationTimestamps;
 
@@ -37,14 +33,14 @@ contract POCP is SchemaResolver, Ownable {
      * @dev Initializes the contract with the attestation schema resolver and ownership
      * @param _eas The Ethereum Attestation Service contract address used for attestations
      */
-    constructor(IEAS _eas) SchemaResolver(_eas) Ownable(_msgSender()) {}
+    constructor(IEAS _eas) SchemaResolver(_eas) {}
 
     /**
      * @notice Registers an event by its ID and sets its expiration time to 24 hours from the current time
-     * @dev Only the contract owner can register an event. Events are given a 24-hour validity period.
+     * @dev Anyone can register an event. Events are given a 24-hour validity period.
      * @param eventId A unique string that identifies the event being registered
      */
-    function addCheckInData(string memory eventId) public onlyOwner {
+    function addCheckInData(string memory eventId) public {
         if (bytes(eventId).length == 0) revert POCP__InvalidEventId();
         s_eventExpirationTimestamps[eventId] = uint64(
             block.timestamp + 24 hours
