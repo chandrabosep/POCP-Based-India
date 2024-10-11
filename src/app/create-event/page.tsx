@@ -6,26 +6,21 @@ import FileUploadDropzone from "@/components/extension/FileUploadDropzone";
 import { Button } from "@/components/ui/button";
 import Papa from "papaparse";
 import { createEvent } from "@/actions/event.action";
-import {
-	Table,
-	TableBody,
-	TableCaption,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { Table, TableCaption } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+	Transaction,
+	TransactionButton,
+	TransactionError,
+	TransactionResponse,
+	TransactionStatus,
+	TransactionStatusAction,
+	TransactionStatusLabel,
+} from "@coinbase/onchainkit/transaction";
+import type { Address, ContractFunctionParameters } from "viem";
+import { POCP_ABI, POCP_ADDRESS } from "../../../constants/EAS";
 
 export default function Page() {
 	const [eventName, setEventName] = useState("");
@@ -35,7 +30,7 @@ export default function Page() {
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
 	const { address } = useAccount();
-	const [date, setDate] = useState<Date>();
+	// const [date, setDate] = useState<Date>();
 
 	const handleFileUpload = (file: File) => {
 		setCsvFile(file);
@@ -45,6 +40,19 @@ export default function Page() {
 				setUsers(results.data);
 			},
 		});
+	};
+
+	const contracts = [
+		{
+			address: POCP_ADDRESS,
+			abi: POCP_ABI,
+			functionName: "addCheckInData",
+			args: [eventName],
+		},
+	] as unknown as ContractFunctionParameters[];
+
+	const handleError = (err: TransactionError) => {
+		console.error("Transaction error:", err);
 	};
 
 	const handleCreateEvent = async () => {
@@ -94,15 +102,15 @@ export default function Page() {
 						eventName,
 						slug: eventName.split(" ").join("-"),
 						creator: address || "",
-						date,
+						// date,
 					}).then(() => {
-						setCreated(true);
 						setLoading(false);
-						toast({
-							title: "Event created successfully",
-							description:
-								"Event has been created successfully🎉",
-						});
+						setCreated(true);
+						// toast({
+						// 	title: "Event created successfully",
+						// 	description:
+						// 		"Event has been created successfully🎉",
+						// });
 					});
 				},
 				error: (error) => {
@@ -130,42 +138,6 @@ export default function Page() {
 							className="text-white placeholder:text-white"
 						/>
 					</div>
-					<div className="flex flex-col gap-2">
-						<Label>Date</Label>
-						<Popover>
-							<PopoverTrigger asChild>
-								<Button
-									variant={"outline"}
-									className={cn(
-										"w-[280px] justify-start text-left font-normal bg-transparent hover:bg-transparent text-white hover:text-white",
-										!date && "text-muted-foreground"
-									)}
-								>
-									<CalendarIcon className="mr-2 h-4 w-4" />
-									{date ? (
-										new Date(date).toLocaleDateString(
-											"en-GB",
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											}
-										)
-									) : (
-										<span>Pick a date</span>
-									)}
-								</Button>
-							</PopoverTrigger>
-							<PopoverContent className="w-auto p-0">
-								<Calendar
-									mode="single"
-									selected={date}
-									onSelect={setDate}
-									initialFocus
-								/>
-							</PopoverContent>
-						</Popover>
-					</div>
 				</div>
 
 				<div className="space-y-2 pt-4">
@@ -173,23 +145,41 @@ export default function Page() {
 					<FileUploadDropzone onFileUpload={handleFileUpload} />
 				</div>
 
-				{created ? (
-					<Link
-						href={`/events/${eventName.split(" ").join("-")}`}
-						className="w-full"
-					>
-						<Button className="w-full bg-[#0152FF] hover:bg-[#0152FF] text-white">
+				<Transaction
+					contracts={contracts}
+					className="w-[450px]"
+					chainId={84532}
+					onError={handleError}
+					onSuccess={handleCreateEvent}
+					capabilities={{
+						paymasterService: {
+							url: process.env
+								.NEXT_PUBLIC_PAYMASTER_AND_BUNDLER_ENDPOINT!,
+						},
+					}}
+				>
+					{created ? (
+						<Link
+							href={`/events/${eventName.split(" ").join("-")}`}
+							className="w-full  bg-[#0152FF] hover:bg-[#0152FF] text-white py-3 px-4 rounded-lg text-center"
+						>
 							Go to your event
-						</Button>
-					</Link>
-				) : (
-					<Button
-						onClick={handleCreateEvent}
-						className="bg-[#0152FF] hover:bg-[#0152FF] text-white"
-					>
-						{loading ? "Loading..." : "Add Attendees"}
-					</Button>
-				)}
+						</Link>
+					) : (
+						eventName &&
+						csvFile &&
+						users.length > 0 && (
+							<TransactionButton
+								className="mt-0 mr-auto ml-auto max-w-full bg-[#0152FF] hover:bg-[#0152FF] text-white"
+								text={loading ? "Loading..." : "Add Attendees"}
+							/>
+						)
+					)}
+					<TransactionStatus>
+						<TransactionStatusLabel />
+						<TransactionStatusAction />
+					</TransactionStatus>
+				</Transaction>
 			</div>
 			<div className="flex flex-col gap-y-6">
 				<h3 className="text-xl font-medium">Participants</h3>

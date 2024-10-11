@@ -188,14 +188,15 @@ export default function Profile() {
 					</Card>
 				</TabsContent>
 			</Tabs>
-			<div className="flex flex-col gap-y-6 py-6 w-1/2">
+			<div className="flex flex-col gap-y-6 py-6 md:w-1/2">
 				<h2 className="text-2xl font-semibold text-white">
 					Interactions
 				</h2>
 				<div className="space-y-4 w-full ">
 					{isLoadingRequests ? (
 						<Loader2Icon className="w-8 h-8 animate-spin mx-auto" />
-					) : (
+					) : // @ts-ignore
+					requests?.requests?.length > 0 ? (
 						requests &&
 						// @ts-ignore
 						requests?.requests?.map((request) => (
@@ -205,14 +206,14 @@ export default function Profile() {
 							>
 								<div className="w-full max-w-6xl">
 									<div className="flex justify-between items-start">
-										<div className="flex gap-x-4">
-											<p className="text-xl">🤝</p>
+										<div className="flex gap-x-2 md:gap-x-4">
+											<p className="md:text-xl">🤝</p>
 											<div className="flex flex-col gap-y-1">
-												<h3 className="text-2xl font-medium text-white max-w-xs">
+												<h3 className="text-base md:text-2xl font-medium text-white max-w-xs">
 													You met with{" "}
 													{request.targetUser.name}
 												</h3>
-												<p className="text-white/40">
+												<p className="text-white/40 text-sm">
 													{new Date(
 														request.targetUser.createdAt
 													).toLocaleString("en-US", {
@@ -236,7 +237,7 @@ export default function Profile() {
 
 										<div className="flex gap-x-4 items-center justify-center pt-2">
 											<div
-												className={`p-1 px-5 rounded-full border capitalize flex items-center font-semibold ${
+												className={`p-1 px-5 rounded-full border capitalize flex items-center font-semibold text-sm md:text-base ${
 													request.status === "PENDING"
 														? "bg-yellow-100 text-yellow-800 border-yellow-500"
 														: request.status ===
@@ -251,10 +252,11 @@ export default function Profile() {
 												{request.status}
 											</div>
 
-											{request.status === "PENDING" &&
+											{
+											request.status === "PENDING" &&
 												request.targetUserId ===
 													request.userId && (
-													<div className="flex space-x-2">
+													<div className="flex flex-col gap-y-2 md:flex-row space-x-2">
 														<Button
 															onClick={() =>
 																acceptRequestMutation.mutate(
@@ -286,6 +288,10 @@ export default function Profile() {
 								</div>
 							</div>
 						))
+					) : (
+						<div className="flex items-center justify-center">
+							No requests yet
+						</div>
 					)}
 				</div>
 			</div>

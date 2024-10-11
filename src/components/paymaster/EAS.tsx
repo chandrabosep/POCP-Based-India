@@ -11,7 +11,7 @@ import {
 import type { Address, ContractFunctionParameters } from "viem";
 import { POCP_ABI, POCP_ADDRESS } from "../../../constants/EAS";
 
-export default function AddData({
+export default function AttestConnections({
 	eventId,
 	connectionCount,
 	connectedAddresses,
@@ -24,10 +24,14 @@ export default function AddData({
 		{
 			address: POCP_ADDRESS,
 			abi: POCP_ABI,
-			functionName: "addCheckInData",
+			functionName: "attest",
 			args: [eventId, "VIRTUAL", connectionCount, connectedAddresses],
 		},
 	] as unknown as ContractFunctionParameters[];
+
+
+	console.log(eventId, "VIRTUAL", connectionCount, connectedAddresses)
+
 
 	const handleError = (err: TransactionError) => {
 		console.error("Transaction error:", err);
@@ -53,8 +57,8 @@ export default function AddData({
 				}}
 			>
 				<TransactionButton
-					className="mt-0 mr-auto ml-auto w-[450px] max-w-full text-[white]"
-					text="Collect"
+					className="mt-0 mr-auto ml-auto w-fit max-w-full text-[white] !text-xs font-normal"
+					text="Attest connections"
 				/>
 				<TransactionStatus>
 					<TransactionStatusLabel />

@@ -7,27 +7,27 @@ import { useAccount } from "wagmi";
 
 export default function HomePage() {
 	return (
-		<div className="">
-			<main className="container mx-auto px-4 py-20">
+		<>
+			<main className="md:px-4 py-20">
 				<section className="text-center mb-20">
-					<div className="text-5xl md:text-7xl font-bold mt-10 my-6 text-white relative">
+					<div className="text-3xl md:text-7xl font-bold mt-10 my-9 md:my-6 text-white relative">
 						Proof of Connection Protocol
 						<Image
 							src="/builtonbase.svg"
 							alt="POCP Logo"
-							className="absolute right-10 top-14 w-40 -rotate-12"
+							className="absolute right-8 md:right-10 top-14 w-20 md:w-40 rotate-12 md:-rotate-12"
 							width={300}
 							height={300}
 						/>
 					</div>
-					<p className="text-xl md:text-2xl mb-8 text-gray-200">
+					<p className="text-lg md:text-2xl mb-8 text-gray-200">
 						Connecting Experiences, Building Futures
 					</p>
 					<Link
 						href="/create-event"
-						className="bg-[#0152FF] hover:bg-[#0152FF] text-white text-lg px-8 py-4 rounded-full w-fit"
+						className="bg-[#0152FF] hover:bg-[#0152FF] text-white text-sm md:text-lg font-medium px-8 py-3 md:py-4 rounded-full w-fit"
 					>
-						Join Now
+						Add Event
 					</Link>
 				</section>
 
@@ -36,7 +36,7 @@ export default function HomePage() {
 						<CardHeader>
 							<CardTitle className="text-2xl text-white font-semibold">{`What is Proof of Connection (POCP)?`}</CardTitle>
 						</CardHeader>
-						<CardContent className="flex flex-col gap-y-4">
+						<CardContent className="flex flex-col gap-y-4 list-outside">
 							{[
 								"POCP is a decentralized protocol that operates on the BASE chain.",
 								"POCPbrings meaningful interactions, such as connections made at events, on-chain.",
@@ -92,7 +92,7 @@ export default function HomePage() {
 				</section>
 			</main>
 
-			<footer className="border-t border-gray-800 mt-10 py-8 text-center text-white flex items-center justify-between">
+			<footer className="border-t border-gray-800 mt-10 py-8 text-center text-white flex flex-col md:flex-row items-center justify-between gap-4">
 				<div className="flex items-center gap-2">
 					<Image
 						src={"/base.webp"}
@@ -123,7 +123,7 @@ export default function HomePage() {
 					</Link>
 				</div>
 			</footer>
-		</div>
+		</>
 	);
 }
 

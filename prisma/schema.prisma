@@ -42,7 +42,7 @@ model Event {
   users     EventUser[]
   requests  Request[]
   slug      String      @unique
-  date      String
+  // date      String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }

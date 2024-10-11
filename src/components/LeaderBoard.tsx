@@ -6,7 +6,7 @@ import { getAllRequestsForEvent } from "@/actions/event.action";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
-import { Button } from "./ui/button";
+import AttestConnections from "./paymaster/EAS";
 
 export default function Leaderboard() {
 	const { address } = useAccount();
@@ -20,6 +20,10 @@ export default function Leaderboard() {
 		enabled: !!address,
 		refetchInterval: 10000,
 	});
+
+	const targetUserAddresses =
+		data &&
+		data?.requests.map((request) => request.targetUser.walletAddress);
 
 	if (isError) return <div>Failed to load leaderboard</div>;
 
@@ -54,12 +58,12 @@ export default function Leaderboard() {
 							: sortedUsers?.map((user, index) => (
 									<li
 										key={user.id}
-										className="flex items-center space-x-6"
+										className="flex items-center gap-x-2 md:space-x-6"
 									>
-										<p className="font-semibold tracking-widest">
+										<p className="text-sm font-semibold tracking-widest">
 											#{index + 1}
 										</p>
-										<Avatar className="size-10">
+										<Avatar className="size-8 md:size-10">
 											<AvatarImage
 												src={`/placeholder.svg?text=${user.name.charAt(
 													0
@@ -70,11 +74,11 @@ export default function Leaderboard() {
 												{user.name.charAt(0)}
 											</AvatarFallback>
 										</Avatar>
-										<div className="flex-1">
-											<h3 className="font-semibold">
+										<div className="flex-1 w-32 md:w-full">
+											<h3 className="font-semibold max-w-[200px] truncate">
 												{user.name}
 											</h3>
-											<p className="text-sm text-white/40">
+											<p className="text-sm text-white/40 max-w-[200px] truncate">
 												{user.email}
 											</p>
 										</div>
@@ -90,17 +94,25 @@ export default function Leaderboard() {
 			</Card>
 
 			<Card className="bg-gray-500 bg-opacity-40  text-white border-white/25 mt-auto">
-				<CardHeader className="p-6 flex flex-row justify-between items-center">
-					<CardTitle className="text-xl font-semibold flex justify-between">
+				<CardHeader className="p-4 md:p-6 flex flex-row justify-between items-center">
+					<CardTitle className="text-lg md:text-xl font-semibold flex justify-between">
 						Your Rank
 					</CardTitle>
-					<Button className="bg-white text-black	hover:bg-white hover:text-black font-medium" onClick={() => {}}>
-						Attest your connections
-					</Button>
+					<AttestConnections
+						// @ts-ignore
+						eventId={data?.name || ""}
+						// @ts-ignore
+						connectionCount={
+							targetUserAddresses?.length.toString() || 1
+						}
+						// @ts-ignore
+						connectedAddresses={targetUserAddresses && targetUserAddresses || []}
+					/>
+					
 				</CardHeader>
-				<CardContent>
+				<CardContent className="p-4 md:p-6 ">
 					{isLoading ? (
-						<div className="flex items-center space-x-4">
+						<div className="flex items-center justify-between space-x-4">
 							<Skeleton className="bg-white/50 h-12 w-12 rounded-full" />
 							<div className="flex-1">
 								<Skeleton className="bg-white/50 w-[120px] h-[20px] rounded-full" />
@@ -110,7 +122,7 @@ export default function Leaderboard() {
 						</div>
 					) : (
 						<div className="flex items-center space-x-4">
-							<Avatar className="h-12 w-12">
+							<Avatar className="size-8 md:size-12">
 								<AvatarImage
 									src={`/placeholder.svg?text=${currentUser?.name?.charAt(
 										0
@@ -122,10 +134,10 @@ export default function Leaderboard() {
 								</AvatarFallback>
 							</Avatar>
 							<div className="flex-1">
-								<p className="font-medium">
+								<p className="font-medium max-w-[200px] truncate">
 									{currentUser?.name}
 								</p>
-								<p className="text-sm text-white/40">
+								<p className="text-sm text-white/40 max-w-[200px] truncate">
 									{currentUser?.email}
 								</p>
 							</div>

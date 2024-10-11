@@ -7,8 +7,8 @@ export const createEvent = async ({
 	eventName,
 	slug,
 	creator,
-	date,
-}: any) => {
+}: // date,
+any) => {
 	try {
 		// Step 1: Create the event
 		console.log(
@@ -19,7 +19,7 @@ export const createEvent = async ({
 				name: eventName,
 				slug,
 				creator,
-				date,
+				// date,
 			},
 		});
 		for (const userData of users) {
