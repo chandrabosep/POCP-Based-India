@@ -9,13 +9,9 @@ import {
 	TransactionStatusLabel,
 } from "@coinbase/onchainkit/transaction";
 import type { Address, ContractFunctionParameters } from "viem";
-import { POCP_ABI, POCP_ADDRESS } from "../../../constants/EAS";
+import { POCP_ABI, POCP_ADDRESS } from "../../../constants/contract";
 
-export default function AddData({
-	eventId,
-}: {
-	eventId: string;
-}) {
+export default function AddData({ eventId }: { eventId: string }) {
 	const contracts = [
 		{
 			address: POCP_ADDRESS,

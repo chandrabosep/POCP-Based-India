@@ -1,4 +1,6 @@
 "use client";
+
+import React from "react";
 import {
 	Transaction,
 	TransactionButton,
@@ -8,30 +10,17 @@ import {
 	TransactionStatusAction,
 	TransactionStatusLabel,
 } from "@coinbase/onchainkit/transaction";
-import type { Address, ContractFunctionParameters } from "viem";
-import { POCP_ABI, POCP_ADDRESS } from "../../../constants/EAS";
+import { POCP_ABI, POCP_ADDRESS } from "../../../constants/contract";
 
-export default function AttestConnections({
-	eventId,
-	connectionCount,
-	connectedAddresses,
-}: {
-	eventId: string;
-	connectionCount: number;
-	connectedAddresses: string[];
-}) {
+export default function Attest({ eventId }: { eventId: string }) {
 	const contracts = [
 		{
 			address: POCP_ADDRESS,
 			abi: POCP_ABI,
-			functionName: "attest",
-			args: [eventId, "VIRTUAL", connectionCount, connectedAddresses],
+			functionName: "improveReputation",
+			args: [eventId],
 		},
-	] as unknown as ContractFunctionParameters[];
-
-
-	console.log(eventId, "VIRTUAL", connectionCount, connectedAddresses)
-
+	];
 
 	const handleError = (err: TransactionError) => {
 		console.error("Transaction error:", err);
@@ -40,6 +29,7 @@ export default function AttestConnections({
 	const handleSuccess = (response: TransactionResponse) => {
 		console.log("Transaction successful", response);
 	};
+
 	return (
 		<div>
 			<Transaction
@@ -48,7 +38,6 @@ export default function AttestConnections({
 				chainId={84532}
 				onError={handleError}
 				onSuccess={handleSuccess}
-				// Paymaster capabilities added below
 				capabilities={{
 					paymasterService: {
 						url: process.env
@@ -57,8 +46,8 @@ export default function AttestConnections({
 				}}
 			>
 				<TransactionButton
-					className="mt-0 mr-auto ml-auto w-fit max-w-full text-[white] !text-xs font-normal"
-					text="Attest connections"
+					className="mt-0 mr-auto ml-auto w-fit max-w-full text-white !text-xs font-normal"
+					text="Attest"
 				/>
 				<TransactionStatus>
 					<TransactionStatusLabel />
