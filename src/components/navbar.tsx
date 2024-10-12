@@ -15,6 +15,7 @@ import {
 	WalletDropdown,
 	WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
+import Link from "next/link";
 
 export default function Navbar() {
 	const { address } = useAccount();
@@ -22,7 +23,7 @@ export default function Navbar() {
 	return (
 		<div className="w-full">
 			<div className="w-11/12 mx-auto max-w-screen-xl flex items-center justify-between py-4 border-b">
-				<div className="text-2xl font-bold">POCP</div>
+				<Link href="/" className="text-2xl font-bold">POCP</Link>
 				<div className="flex justify-end">
 					<Wallet>
 						<ConnectWallet  className="bg-[#0152FF] hover:bg-[#0152FF] text-white">

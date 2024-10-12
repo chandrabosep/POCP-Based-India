@@ -105,7 +105,7 @@ export default function Leaderboard() {
 							<ExternalLinkIcon className="size-5" />
 						</Link>
 					</CardTitle>
-					{targetUserAddresses > 0 && (
+					{data && data?.requests?.length > 0 && (
 						<Attest eventId={data?.event.name || ""} />
 					)}
 				</CardHeader>

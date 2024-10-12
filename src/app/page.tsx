@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, Zap, Shield, Globe, LinkIcon, ToyBrick } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount } from "wagmi";
 
 export default function HomePage() {
 	return (
@@ -24,7 +23,7 @@ export default function HomePage() {
 						Connecting Experiences, Building Futures
 					</p>
 					<Link
-						href="/create-event"
+						href="/add-event"
 						className="bg-[#0152FF] hover:bg-[#0152FF] text-white text-sm md:text-lg font-medium px-8 py-3 md:py-4 rounded-full w-fit"
 					>
 						Add Event
@@ -39,10 +38,10 @@ export default function HomePage() {
 						<CardContent className="flex flex-col gap-y-4 list-outside">
 							{[
 								"POCP is a decentralized protocol that operates on the BASE chain.",
-								"POCPbrings meaningful interactions, such as connections made at events, on-chain.",
+								"POCP brings meaningful interactions, such as connections made at events, on-chain.",
 								"POCP is designed for everyone, including students, developers, and event participants.",
 								"POCP leverages blockchain technology to create lasting, immutable records of interactions.",
-								"POCP enhances networking opportunities by providing verifiable, permanent records of interactions, strengthening collaboration and growth within the community.",
+								"POCP boosts networking by offering verifiable, lasting records of interactions, fostering stronger collaboration and community growth.",
 							].map((item, index) => (
 								<li
 									className="text-gray-300 list-outside list-disc list-item"
@@ -65,30 +64,70 @@ export default function HomePage() {
 						description="Easily integrate Luma events into POCP to enable proof of your interactions of your event."
 					/>
 					<FeatureCard
+						icon={<Globe className="w-8 h-8 text-[#2d64db]" />}
+						title="Powered by BASE"
+						description="POCP ensures high performance and low transaction costs for storing connections on-chain."
+					/>
+					<FeatureCard
+						icon={<Shield className="w-8 h-8 text-red-400" />}
+						title="Secure Attestations"
+						description="Utilize Ethereum Attestation Service for verifiable connection proofs on BASE."
+					/>
+
+					<FeatureCard
 						icon={<Sparkles className="w-8 h-8 text-blue-400" />}
 						title="Universal Inclusion"
-						description="Onboard everyone to the blockchain, regardless of their experience level."
+						description="Onboard everyone to on-chain via BASE, regardless of their experience level."
 					/>
 					<FeatureCard
 						icon={<LinkIcon className="w-8 h-8 text-green-400" />}
 						title="Seamless Networking"
-						description="Create lasting digital proofs of connections made at events."
+						description="Generate enduring digital proof of event connections using QR codes."
 					/>
 					<FeatureCard
 						icon={<Zap className="w-8 h-8 text-yellow-400" />}
 						title="Future-Ready"
 						description="Build upon interactions for future opportunities and collaborations."
 					/>
-					<FeatureCard
-						icon={<Shield className="w-8 h-8 text-red-400" />}
-						title="Secure Attestations"
-						description="Utilize Ethereum Attestation Service for verifiable connection proofs."
-					/>
-					<FeatureCard
-						icon={<Globe className="w-8 h-8 text-[#0152FF]" />}
-						title="Powered by BASE"
-						description="POCP ensures high performance and low transaction costs for storing connections on-chain."
-					/>
+				</section>
+
+				<section className="mt-24">
+					<Card className="bg-gray-600 bg-opacity-50 backdrop-contrast-100 backdrop-filter  backdrop-blur border border-white/20 py-4">
+						<CardHeader>
+							<CardTitle className="text-2xl text-white text-center font-semibold">
+								{`Built on BASE ecosystem`}
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="flex flex-wrap gap-4 items-center justify-center">
+							{[
+								{ title: "BASE", image: "/base.webp" },
+								{
+									title: "Onchain Kit",
+									image: "/onchainkit.png",
+								},
+								{
+									title: "Smart Wallet",
+									image: "/smartwallet.svg",
+								},
+								{ title: "Paymaster", image: "/paymaster.svg" },
+								{ title: "EAS", image: "/eas.png" },
+							].map((item, index) => (
+								<div
+									className="bg-gray-500 bg-opacity-50 backdrop-contrast-100 backdrop-filter  backdrop-blur border border-white/20 flex items-center justify-center rounded-full w-fit py-2 px-4 min-w-32 md:min-w-48 gap-x-2 text-white"
+									key={index}
+								>
+									<Image
+										src={item.image}
+										alt="alt"
+										width={500}
+										height={500}
+										className="size-6 md:size-8"
+									/>
+									{item.title}
+								</div>
+							))}
+						</CardContent>
+					</Card>
 				</section>
 			</main>
 

@@ -15,7 +15,7 @@ import { POCP_ABI, POCP_ADDRESS } from "../../../constants/contract";
 export default function Attest({ eventId }: { eventId: string }) {
 	const contracts = [
 		{
-			address: POCP_ADDRESS,
+			address: POCP_ADDRESS as `0x${string}`,
 			abi: POCP_ABI,
 			functionName: "improveReputation",
 			args: [eventId],
@@ -33,6 +33,7 @@ export default function Attest({ eventId }: { eventId: string }) {
 	return (
 		<div>
 			<Transaction
+				// @ts-ignore
 				contracts={contracts}
 				className="w-[450px]"
 				chainId={84532}
