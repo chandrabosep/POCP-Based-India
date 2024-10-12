@@ -75,7 +75,7 @@ export default function Attest({ eventId }: { eventId: string }) {
             </Transaction>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-xl bg-gradient-to-b from-blue-800 to-black text-foreground ring-0 border-0 text-white">
+                <DialogContent className="max-w-xl bg-gradient-to-b from-blue-800 to-blue-700 text-foreground ring-0 border-0 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-xl text-primaryColor">
                             Your reputation has improved
