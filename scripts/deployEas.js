@@ -4,7 +4,7 @@ async function main() {
   const easAddressForBaseSepolia = "0x4200000000000000000000000000000000000021";
 
   // POCP
-  const pocpContract = await hre.ethers.getContractFactory("POCP_EAS");
+  const pocpContract = await hre.ethers.getContractFactory("POCP");
   console.log("Deploying POCP Contract...");
   const pocp = await pocpContract.deploy(
     easAddressForBaseSepolia,
