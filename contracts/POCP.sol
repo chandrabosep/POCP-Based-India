@@ -18,7 +18,7 @@ error POCP__InvalidAttestation();
  * @author mujahid002
  * @custom:security-contact mujahidshaik2002@gmail.com
  */
-contract POCP is SchemaResolver {
+contract POCP_EAS is SchemaResolver {
     /// @notice Maps an event's unique identifier to its expiration timestamp
     mapping(string => uint64) private s_eventExpirationTimestamps;
 
@@ -60,10 +60,10 @@ contract POCP is SchemaResolver {
     ) internal override returns (bool) {
         (
             string memory eventId,
-            /*string memory eventType*/
+            ,
             uint8 connectionCount,
             address[] memory connectedAddresses
-        ) = abi.decode(attestation.data, (string, uint8, address[]));
+        ) = abi.decode(attestation.data, (string, string, uint8, address[]));
 
         // Ensure the event is valid and exists
         if (s_eventExpirationTimestamps[eventId] == 0)
