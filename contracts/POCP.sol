@@ -3,28 +3,26 @@ pragma solidity ^0.8.20;
 
 import {IEAS, Attestation} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import {SchemaResolver} from "@ethereum-attestation-service/eas-contracts/contracts/resolver/SchemaResolver.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// Custom Errors for better gas efficiency and clarity
-error POCP__InvalidEventId();
-error POCP__AttestationAlreadyExists();
-error POCP__InvalidConnectionData();
-error POCP__EventNotFound();
-error POCP__EventExpired();
-error POCP__InvalidTimestamp();
-error POCP__InvalidAttestation();
+error POCP__InvalidEventId(); // Triggered when an invalid event ID is provided
+error POCP__InvalidConnectionData(); // Triggered when the connection data in an attestation is invalid
+error POCP__EventNotFound(); // Triggered when an event is not found
+error POCP__EventExpired(); // Triggered when an event has expired
+error POCP__InvalidOwner(); // Triggered when the invalid owner creates attestation
 
 /**
  * @title POCP - Proof of Connection Protocol
  * @author mujahid002
+ * @notice This contract implements a Proof of Connection Protocol, where users can register for events,
+ * improve their reputation scores, and verify attestations using the Ethereum Attestation Service (EAS) on Base.
+ * @dev Inherits from SchemaResolver for attestation verification and Ownable for ownership control.
  * @custom:security-contact mujahidshaik2002@gmail.com
  */
-contract POCP_EAS is SchemaResolver {
+contract POCP is SchemaResolver, Ownable {
     /// @notice Maps an event's unique identifier to its expiration timestamp
     mapping(string => uint64) private s_eventExpirationTimestamps;
-
-    /// @notice Maps an address and event ID to the number of connections made by the user in that event
-    mapping(address => mapping(string => uint8))
-        private s_userConnectionsPerEvent;
 
     /// @notice Maps a user's address to their reputation score
     mapping(address => uint64) private s_userReputation;
@@ -33,10 +31,10 @@ contract POCP_EAS is SchemaResolver {
      * @dev Initializes the contract with the attestation schema resolver and ownership
      * @param _eas The Ethereum Attestation Service contract address used for attestations
      */
-    constructor(IEAS _eas) SchemaResolver(_eas) {}
+    constructor(IEAS _eas) SchemaResolver(_eas) Ownable(_msgSender()) {}
 
     /**
-     * @notice Registers an event by its ID and sets its expiration time to 24 hours from the current time
+     * @notice Registers an event by its unique identifier and sets its expiration time to 24 hours from the current block timestamp
      * @dev Anyone can register an event. Events are given a 24-hour validity period.
      * @param eventId A unique string that identifies the event being registered
      */
@@ -48,16 +46,25 @@ contract POCP_EAS is SchemaResolver {
     }
 
     /**
-     * @notice Handles an attestation when a user attests their participation or connection in an event
-     * @dev This function checks the event validity, verifies the connection count, and updates the user's reputation
-     * score and connection count for the event.
-     * @param attestation The data structure that contains the attestation information (event ID, type, connection count, etc.)
-     * @return bool Returns true if the attestation was successful
+     * @notice Allows a user to improve their reputation by interacting with an event
+     * @dev The event must still be valid (i.e., not expired) for the reputation to be improved.
+     * @param eventId The unique identifier of the event in which the user participated.
+     */
+    function improveReputation(string memory eventId) public {
+        if (s_eventExpirationTimestamps[eventId] < uint64(block.timestamp))
+            revert POCP__EventExpired();
+        s_userReputation[_msgSender()] += 1;
+    }
+
+    /**
+     * @notice Verifies the attestation data during the attestation process
+     * @dev Called internally during attestation by Multi Attest Owner, ensures the event is valid and the connection data is correct.
      */
     function onAttest(
         Attestation calldata attestation,
         uint256 /*value*/
-    ) internal override returns (bool) {
+    ) internal view override returns (bool) {
+        if (attestation.attester != owner()) revert POCP__InvalidOwner();
         (
             string memory eventId,
             ,
@@ -73,10 +80,6 @@ contract POCP_EAS is SchemaResolver {
         if (attestation.time > s_eventExpirationTimestamps[eventId])
             revert POCP__EventExpired();
 
-        // Ensure the user hasn't already made an attestation for the event
-        if (s_userConnectionsPerEvent[attestation.attester][eventId] != 0)
-            revert POCP__AttestationAlreadyExists();
-
         // Ensure the connected addresses count matches the expected connection count
         if (
             connectedAddresses.length == 0 ||
@@ -85,18 +88,13 @@ contract POCP_EAS is SchemaResolver {
             revert POCP__InvalidConnectionData();
         }
 
-        // Record the attestation and increase the user's reputation score
-        s_userConnectionsPerEvent[attestation.attester][
-            eventId
-        ] = connectionCount;
-        s_userReputation[attestation.attester] += 1;
-
         return true;
     }
 
     /**
      * @notice Revocation of attestations is not supported in this contract
-     * @return bool Always returns false as revocation is not allowed
+     * @dev This contract does not allow revoking attestations.
+     * @return bool Always returns false as revocation is not allowed.
      */
     function onRevoke(
         Attestation calldata /*attestation*/,
@@ -108,25 +106,15 @@ contract POCP_EAS is SchemaResolver {
     /**
      * @notice Retrieves the expiration timestamp of a registered event
      * @param eventId The unique identifier of the event
-     * @return uint64 The expiration timestamp of the event in Unix format (seconds since the epoch)
+     * @return uint64 The expiration timestamp of the event in Unix time (seconds since the epoch)
+     * @custom:error POCP__EventNotFound is triggered when the event does not exist.
      */
     function getEventExpiration(
         string memory eventId
     ) public view returns (uint64) {
+        if (s_eventExpirationTimestamps[eventId] == 0)
+            revert POCP__EventNotFound();
         return s_eventExpirationTimestamps[eventId];
-    }
-
-    /**
-     * @notice Retrieves the number of connections a user has made for a specific event
-     * @param user The address of the user
-     * @param eventId The unique identifier of the event
-     * @return uint8 The number of connections the user has made for the event
-     */
-    function getUserConnectionCountForEvent(
-        address user,
-        string memory eventId
-    ) public view returns (uint8) {
-        return s_userConnectionsPerEvent[user][eventId];
     }
 
     /**
