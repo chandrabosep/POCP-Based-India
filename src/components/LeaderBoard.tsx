@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
 
+
 export default function Leaderboard() {
 	const { address } = useAccount();
 	const pathname = usePathname();
@@ -149,119 +150,8 @@ export default function Leaderboard() {
 					)}
 				</CardContent>
 			</Card>
+		
 		</div>
 	);
 }
 
-// "use client";
-
-// import React from "react";
-// import {
-// 	Transaction,
-// 	TransactionButton,
-// 	TransactionError,
-// 	TransactionResponse,
-// 	TransactionStatus,
-// 	TransactionStatusAction,
-// 	TransactionStatusLabel,
-// } from "@coinbase/onchainkit/transaction";
-// import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk";
-// import {
-// 	EAS_ADDRESS,
-// 	POCP_ABI,
-// 	SCHEMA_UID,
-// } from "../../../constants/contract";
-
-// export default function Attest({
-// 	eventId,
-// 	eventType,
-// 	connectionCount = 0, // Default to 0 if not provided
-// 	connectedAddresses = [],
-// 	userAddress,
-// }: {
-// 	eventId: string;
-// 	eventType: string;
-// 	connectionCount: number;
-// 	connectedAddresses?: string[];
-// 	userAddress: string;
-// }) {
-// 	console.log(
-// 		"dataaaaaaaaaaaaaaaaaa",
-// 		eventId,
-// 		eventType,
-// 		connectionCount,
-// 		connectedAddresses,
-// 		userAddress
-// 	);
-// 	const schemaEncoder = new SchemaEncoder(
-// 		"string eventId, string eventType, uint8 connectionCount, address[] connectedAddresses"
-// 	);
-
-// 	const encodedData = schemaEncoder.encodeData([
-// 		{ name: "eventId", value: eventId, type: "string" },
-// 		{ name: "eventType", value: eventType, type: "string" },
-// 		{ name: "connectionCount", value: connectionCount, type: "uint8" },
-// 		{
-// 			name: "connectedAddresses",
-// 			value: connectedAddresses,
-// 			type: "address[]",
-// 		},
-// 	]);
-
-// 	// Prepare the attestation request
-// const attestationRequest = {
-//     schema: SCHEMA_UID,
-//     data: {
-//         recipient: userAddress,
-//         expirationTime: 0, // Adjust if needed
-//         revocable: false,
-//         refUID: ZERO_BYTES32, // Adjust if needed
-//         data: encodedData,
-//         value: 0,
-//     },
-// };
-
-// 	// Define the contract interaction
-// 	const contracts = [
-// 		{
-// 			address: EAS_ADDRESS,
-// 			abi: POCP_ABI,
-// 			functionName: "attest",
-// 			args: [attestationRequest],
-// 		},
-// 	];
-
-// 	const handleError = (err: TransactionError) => {
-// 		console.error("Transaction error:", err);
-// 	};
-
-// 	const handleSuccess = (response: TransactionResponse) => {
-// 		// console.log("Transaction successful", response);
-// 		// const newAttestationUID = response?.receipt.logs[0].topics[1]; // Adjust based on event logs
-// 		// console.log("New attestation UID:", newAttestationUID);
-// 		// console.log(
-// 		// 	`Attestation Link https://base-sepolia.easscan.org/attestation/view/${newAttestationUID}`
-// 		// );
-// 	};
-
-// 	return (
-// 		<div>
-// 			<Transaction
-// 				contracts={contracts}
-// 				className="w-[450px]"
-// 				chainId={84532}
-// 				onError={handleError}
-// 				onSuccess={handleSuccess}
-// 			>
-// 				<TransactionButton
-// 					className="mt-0 mr-auto ml-auto w-fit max-w-full text-white !text-xs font-normal"
-// 					text="Attest"
-// 				/>
-// 				<TransactionStatus>
-// 					<TransactionStatusLabel />
-// 					<TransactionStatusAction />
-// 				</TransactionStatus>
-// 			</Transaction>
-// 		</div>
-// 	);
-// }
