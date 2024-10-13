@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
+import { ExternalLinkIcon, Loader2Icon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 import { QRCodeSVG } from "qrcode.react";
@@ -17,6 +17,7 @@ import {
 	getAllRequestsForUser,
 	isUserInEvent,
 } from "@/actions/event.action";
+import Link from "next/link";
 
 export default function Profile() {
 	const { address } = useAccount();
@@ -183,9 +184,18 @@ export default function Profile() {
 			</Tabs>
 
 			<div className="flex flex-col gap-y-6 py-6 md:w-1/2">
-				<h2 className="text-2xl font-semibold text-white">
-					Interactions
-				</h2>
+				<div className="flex justify-between">
+					<h2 className="text-2xl font-semibold text-white">
+						Interactions
+					</h2>
+					<Link
+						href={`/events/${eventSlug}/`}
+						className="bg-[#0152FF] hover:bg-[#0152FF] text-white flex items-center justify-center px-2 rounded-lg text-sm gap-x-2"
+					>
+						Leaderboard
+						<ExternalLinkIcon className="w-4" />
+					</Link>
+				</div>
 				<div className="space-y-4 w-full">
 					{isLoadingRequests ? (
 						<Loader2Icon className="w-8 h-8 animate-spin mx-auto" />
