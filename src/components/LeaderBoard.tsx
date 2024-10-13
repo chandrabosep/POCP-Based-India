@@ -18,9 +18,10 @@ export default function Leaderboard() {
 	const pathname = usePathname();
 	const pathSegments = pathname.split("/");
 	const eventSlug = pathSegments[2];
+	console.log(eventSlug);
 
 	const { data, isLoading, isError } = useQuery({
-		queryKey: ["requests", eventSlug],
+		queryKey: ["requests", eventSlug,address],
 		queryFn: () => getAllRequestsForEvent(eventSlug, address || ""),
 		enabled: !!address,
 		refetchInterval: 10000,

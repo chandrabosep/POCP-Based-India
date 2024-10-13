@@ -304,7 +304,11 @@ export const getAllRequestsForEvent = async (
 	eventSlug: string,
 	currentUserWallet: string
 ) => {
-	console.log("Fetching requests and users for event:", eventSlug);
+	console.log(
+		"Fetching requests and users for event:",
+		eventSlug,
+		currentUserWallet
+	);
 
 	try {
 		// Step 1: Find the event by slug
