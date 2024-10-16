@@ -66,3 +66,4 @@ export const attest = async (data) => {
         throw error; // Rethrow the error for handling in the calling function
     }
 };
+
