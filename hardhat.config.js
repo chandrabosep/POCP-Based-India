@@ -7,7 +7,7 @@ module.exports = {
   networks: {
     baseSepolia: {
       url: process.env.BASE_SEPOLIA_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.CB_PRIVATE_KEY],
       chainId: 84532,
       // gasPrice: "auto",
       // gas: 5000000,
