@@ -21,7 +21,7 @@ error POCP__RevocationNotAllowed();
  * @dev The contract uses mappings to store event expiration timestamps, user connections, and reputation scores.
  * @custom:security-contact mujahidshaik2002@gmail.com
  */
-contract POCP is ISPHook {
+contract POCP_HOOK is ISPHook {
     /// @notice Reference to the ISP (Sign Protocol) contract, which manages the attestations.
     ISP private s_baseIspContract;
 
