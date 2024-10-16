@@ -2,7 +2,9 @@
   "name": "pocp-proof-of-connection-protocol",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
+    "@ethereum-attestation-service/eas-sdk": "1.5.0",
     "@ethereum-attestation-service/eas-contracts": "^1.4.1",
     "@ethsign/sign-protocol-evm": "^1.1.1",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
